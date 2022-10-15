@@ -1,0 +1,32 @@
+Copyright © 2022 Roman Firsov All rights reserved.
+Разработчик приложения: Роман Фирсов. Все права защищены ©
+
+
+
+
+
+
+
+Контейнер под приложение: https://hub.docker.com/repository/docker/romanyakit/botparser
+
+
+Инструкция по запуску:
+```
+mysql -p
+password: zxcv
+```
+
+Минимальный конфиг базы:
+```
+USE mysql;   
+SELECT user FROM user;  
+CREATE DATABASE tg_bot;  
+CREATE USER 'tg_bot'@'%' IDENTIFIED BY 'tg_bot'; 
+GRANT ALL PRIVILEGES ON *.* TO 'tg_bot'@'%' WITH GRANT OPTION; 
+FLUSH PRIVILEGES;
+```
+
+перейти в /home и запустить
+```
+java -jar TelegramBotParser.jar
+```
