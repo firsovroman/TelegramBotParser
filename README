@@ -5,7 +5,7 @@ Copyright © 2022 Roman Firsov All rights reserved.
 Контейнер под приложение: https://hub.docker.com/repository/docker/romanyakit/botparser
 
 
-Инструкция по запуску:
+Инструкция по запуску приложения в контейнере:
 ```
 mysql -p
 password: zxcv
