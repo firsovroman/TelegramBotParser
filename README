@@ -1,5 +1,6 @@
 Copyright © 2022 Roman Firsov All rights reserved.
 
+Бот предназначен для пуш уведомлений пользователя по заданному фильтру на сайте объявлений Ав*то .
 
 
 Контейнер под приложение: https://hub.docker.com/repository/docker/romanyakit/botparser
