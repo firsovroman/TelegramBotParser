@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TelegramAdapter extends TelegramLongPollingBot {
@@ -33,7 +34,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private static final String INFORMATION_ABOUT_APP = "Разработчик приложения: https://t.me/roman_f_dev Все права защищены ©";
 
-    final BotConfig config;
+    private final BotConfig config;
 
     private final AdsRepository adsRepository;
 
@@ -41,7 +42,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private final ParserAdapter parserAdapter;
 
-    private boolean isItAnswer = false;
+    private final AtomicBoolean isItAnswer = new AtomicBoolean(false);
 
     @Autowired
     public TelegramAdapter(BotConfig config,
@@ -73,6 +74,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand("/info", "get application information"));
         listOfCommands.add(new BotCommand("/start", "enable update subscription"));
         listOfCommands.add(new BotCommand("/edit", "change search link"));
+        listOfCommands.add(new BotCommand("/excluded", "not implemented yet"));
         listOfCommands.add(new BotCommand("/stop", "disable update subscription"));
 
         try {
@@ -100,8 +102,8 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
             long chatId = update.getMessage().getChatId();
 
-            if(isItAnswer) {
-                isItAnswer = false;
+            if(isItAnswer.get()) {
+                isItAnswer.set(false);
                 validateAndSetURL(messageText, chatId);
                 return;
             }
@@ -115,7 +117,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
                     break;
                 case "/edit" :
                     sendMessage(chatId, "Следующим сообщением введите ссылку для поиска: ");
-                    isItAnswer = true;
+                    isItAnswer.set(true);
                     break;
                 case "/stop" :
                     unregisterUserAsSubscriber(update.getMessage());
