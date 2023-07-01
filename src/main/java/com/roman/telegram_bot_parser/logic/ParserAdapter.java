@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,9 +24,7 @@ public class ParserAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserAdapter.class);
 
-    private final int adExpirationAge;
-    private String urlForParsing;
-    private final String regExpByPostTime;
+    private final AtomicReference<String> urlForParsing;
     private final Pattern filteredByPostTime;
 
     private final DriverConfigurator driverConfigurator;
@@ -35,9 +34,9 @@ public class ParserAdapter {
     public ParserAdapter(AdsRepository adsRepository, DriverConfigurator driverConfigurator, ParserConfig parserConfig) {
         this.adsRepository = adsRepository;
         this.driverConfigurator = driverConfigurator;
-        this.urlForParsing = parserConfig.getDefUrlForParse();
-        this.adExpirationAge = parserConfig.getAdExpirationAgeMinutes();
-        this.regExpByPostTime = "\\b[1-"+ adExpirationAge +"]\\b минут.*";
+        this.urlForParsing = new AtomicReference<>(parserConfig.getDefUrlForParse());
+        int adExpirationAge = parserConfig.getAdExpirationAgeMinutes();
+        String regExpByPostTime = "\\b[1-" + adExpirationAge + "]\\b минут.*";
         this.filteredByPostTime = Pattern.compile(regExpByPostTime);
     }
 
@@ -66,13 +65,13 @@ public class ParserAdapter {
     }
 
     public Document getFirstPage(WebDriver webDriver) {
-        webDriver.get(urlForParsing);
+        webDriver.get(urlForParsing.get());
         return Jsoup.parse(webDriver.getPageSource());
     }
 
 
     public void setUrlForParsing(String urlForParsing) {
-        this.urlForParsing = urlForParsing;
+        this.urlForParsing.set(urlForParsing);
         LOGGER.info("URL was changed for {}", urlForParsing);
     }
 

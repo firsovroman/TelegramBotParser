@@ -44,7 +44,7 @@ public class BotConfig {
     public String toString() {
         return "BotConfig{" +
                 "bothName='" + bothName + '\'' +
-                ", token='" + token + '\'' +
+                ", token='" + "*******" + '\'' +
                 '}';
     }
 

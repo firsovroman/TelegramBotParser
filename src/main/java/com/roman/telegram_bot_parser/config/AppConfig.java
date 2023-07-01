@@ -60,4 +60,12 @@ public class AppConfig {
     }
 
 
+    @Override
+    public String toString() {
+        return "AppConfig{" +
+                "projectVersion='" + projectVersion + '\'' +
+                ", buildProfile='" + buildProfile + '\'' +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

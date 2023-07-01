@@ -21,7 +21,7 @@ public class ParsingUtils {
         List<Ad> adList = new ArrayList<>();
         for(Element e : newNames) {
             Ad one = new Ad(
-                    Long.valueOf(e.attr("data-item-id")),
+                    Long.parseLong(e.attr("data-item-id")),
                     URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
                     e.getElementsByAttributeValue("itemprop","price").attr("content"),
                     e.getElementsByAttributeValue("data-marker","item-date").text()
@@ -40,7 +40,7 @@ public class ParsingUtils {
         HashMap<String , Ad> entityHashMap = new HashMap<>();
         for(Element e : newNames) {
             Ad one = new Ad(
-                    Long.valueOf(e.attr("data-item-id")),
+                    Long.parseLong(e.attr("data-item-id")),
                     URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
                     e.getElementsByAttributeValue("itemprop","price").attr("content"),
                     e.getElementsByAttributeValue("data-marker","item-date").text()
