@@ -6,27 +6,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.Objects;
+
 @Configuration
 public class ParserConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserConfig.class);
 
-    private int testRange;
-    private String urlForParse;
+
+    //Возраст истечения срока действия объявления
+    private final int adExpirationAgeMinutes;
+    private final String defUrlForParse;
 
     @Autowired
     public ParserConfig(Environment environment) {
-        this.testRange = Integer.parseInt(environment.getProperty("parser.testRange"));
-        LOGGER.info("testRange: {}", testRange);
-        this.urlForParse = environment.getProperty("parser.urlForParsing");
-        LOGGER.info("urlForParse: {}", urlForParse);
+        this.adExpirationAgeMinutes = Integer.parseInt(Objects.requireNonNull(environment.getProperty("parser.adExpirationAgeMinutes")));
+        LOGGER.info("adExpirationAgeMinutes: {}", adExpirationAgeMinutes);
+        this.defUrlForParse = environment.getProperty("parser.defUrlForParse");
+        LOGGER.info("defUrlForParse: {}", defUrlForParse);
     }
 
-    public int getTestRange() {
-        return testRange;
+    public int getAdExpirationAgeMinutes() {
+        return adExpirationAgeMinutes;
     }
 
-    public String getUrlForParse() {
-        return urlForParse;
+    public String getDefUrlForParse() {
+        return defUrlForParse;
     }
 }

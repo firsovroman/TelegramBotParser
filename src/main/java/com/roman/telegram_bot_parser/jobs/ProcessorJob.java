@@ -25,7 +25,7 @@ public class ProcessorJob {
         this.userRepository = userRepository;
     }
 
-    @Scheduled(fixedRateString = "#{@processor.config.fixedRate}")
+    @Scheduled(fixedRateString = "#{@processor.config.siteScanningIntervalMillis}")
     public void execute() {
         LOGGER.info("job() started");
         if (listOfUsersIsEmpty(userRepository.findAll())) {

@@ -6,28 +6,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.Objects;
+
 @Configuration
 public class ProcessorConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorConfig.class);
 
-    private int fixedRate;
+    private final int siteScanningIntervalMillis;
 
     @Autowired
     public ProcessorConfig(Environment environment) {
-        int fixedRateMinute = Integer.parseInt(environment.getProperty("processor.fixedRateMinute"));
-        this.fixedRate = fixedRateMinute * 1000 * 60;
-        LOGGER.info("fixedRateMinute: {}", fixedRateMinute);
+        int siteScanningIntervalMinutes = Integer.parseInt(Objects.requireNonNull(environment.getProperty("processor.siteScanningIntervalMinutes")));
+        this.siteScanningIntervalMillis = siteScanningIntervalMinutes * 1000 * 60;
+        LOGGER.info("siteScanningIntervalMinutes: {}", siteScanningIntervalMinutes);
     }
 
-    public int getFixedRate() {
-        return fixedRate;
+    public int getSiteScanningIntervalMillis() {
+        return siteScanningIntervalMillis;
     }
 
     @Override
     public String toString() {
         return "ProcessorConfig{" +
-                ", fixedRate=" + fixedRate +
+                ", siteScanningIntervalMillis=" + siteScanningIntervalMillis +
                 '}';
     }
 }

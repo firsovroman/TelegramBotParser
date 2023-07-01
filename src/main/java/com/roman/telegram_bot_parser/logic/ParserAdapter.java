@@ -23,10 +23,10 @@ public class ParserAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserAdapter.class);
 
-    private int testRange;
+    private final int adExpirationAge;
     private String urlForParsing;
-    private String regExp;
-    private Pattern testRangePattern;
+    private final String regExpByPostTime;
+    private final Pattern filteredByPostTime;
 
     private final DriverConfigurator driverConfigurator;
     private final AdsRepository adsRepository;
@@ -35,10 +35,10 @@ public class ParserAdapter {
     public ParserAdapter(AdsRepository adsRepository, DriverConfigurator driverConfigurator, ParserConfig parserConfig) {
         this.adsRepository = adsRepository;
         this.driverConfigurator = driverConfigurator;
-        this.urlForParsing = parserConfig.getUrlForParse();
-        this.testRange = parserConfig.getTestRange();
-        this.regExp = "\\b[1-"+ testRange +"]\\b минут.*";
-        this.testRangePattern = Pattern.compile(regExp);
+        this.urlForParsing = parserConfig.getDefUrlForParse();
+        this.adExpirationAge = parserConfig.getAdExpirationAgeMinutes();
+        this.regExpByPostTime = "\\b[1-"+ adExpirationAge +"]\\b минут.*";
+        this.filteredByPostTime = Pattern.compile(regExpByPostTime);
     }
 
     public void parseAndSaveAds()  {
@@ -53,7 +53,7 @@ public class ParserAdapter {
             List<Ads> tempList = ParsingUtils.parseToList(page);
 
             afterFiltering = tempList.stream().filter(it -> {
-                Matcher matcher = testRangePattern.matcher(it.getDate());
+                Matcher matcher = filteredByPostTime.matcher(it.getDate());
                 return matcher.find();
             }).collect(Collectors.toList());
 

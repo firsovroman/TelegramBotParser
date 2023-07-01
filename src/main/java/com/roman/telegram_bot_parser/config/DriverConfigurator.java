@@ -30,6 +30,9 @@ public class DriverConfigurator {
         options.addArguments("--disable-infobars");
         options.addArguments("--start-maximized");
 
+        // в профиле dev
+        options.addArguments("--remote-allow-origins=*");
+
         WebDriver browser = new ChromeDriver(options);
         browser.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 

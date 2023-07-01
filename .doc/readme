@@ -1,0 +1,10 @@
+Для корректной работы нужно чтобы версия драйвера (chromedriver.exe)
+совпадала с версией Chrome на целевой машине запуска.
+
+Текущая версия (chromedriver.exe) в профиле dev: 114.0.5735.16
+Текущая версия (chromedriver.exe) в профиле prod: ~ 105
+
+Где можно скачать драйвера:
+https://chromedriver.chromium.org/downloads
+
+
