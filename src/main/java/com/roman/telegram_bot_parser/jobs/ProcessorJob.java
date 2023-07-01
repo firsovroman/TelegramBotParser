@@ -1,6 +1,6 @@
 package com.roman.telegram_bot_parser.jobs;
 
-import com.roman.telegram_bot_parser.dao.UserRepository;
+import com.roman.telegram_bot_parser.dao.TelegramUserRepository;
 import com.roman.telegram_bot_parser.logic.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +17,18 @@ public class ProcessorJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorJob.class);
 
     private final Processor processor;
-    private final UserRepository userRepository;
+    private final TelegramUserRepository telegramUserRepository;
 
     @Autowired
-    public ProcessorJob(Processor processor, UserRepository userRepository) {
+    public ProcessorJob(Processor processor, TelegramUserRepository telegramUserRepository) {
         this.processor = processor;
-        this.userRepository = userRepository;
+        this.telegramUserRepository = telegramUserRepository;
     }
 
     @Scheduled(fixedRateString = "#{@processor.config.siteScanningIntervalMillis}")
     public void execute() {
         LOGGER.info("job() started");
-        if (listOfUsersIsEmpty(userRepository.findAll())) {
+        if (listOfUsersIsEmpty(telegramUserRepository.findAll())) {
             LOGGER.info("job() failed because there are no subscribers");
             return;
         }

@@ -1,6 +1,6 @@
 package com.roman.telegram_bot_parser.utils;
 
-import com.roman.telegram_bot_parser.dao.Ads;
+import com.roman.telegram_bot_parser.dao.Ad;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -14,32 +14,32 @@ public class ParsingUtils {
 
     private static final String URL_MAKER = "https://www.avito.ru";
 
-    public static List<Ads> parseToList(Document page) {
+    public static List<Ad> parseToList(Document page) {
         Element firstElement = page.select("div[class=items-items-kAJAg][data-marker=catalog-serp]").first();
         Elements newNames  = firstElement.getElementsByAttributeValue("data-marker", "item");
 
-        List<Ads> adsList = new ArrayList<>();
+        List<Ad> adList = new ArrayList<>();
         for(Element e : newNames) {
-            Ads one = new Ads(
+            Ad one = new Ad(
                     Long.valueOf(e.attr("data-item-id")),
                     URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
                     e.getElementsByAttributeValue("itemprop","price").attr("content"),
                     e.getElementsByAttributeValue("data-marker","item-date").text()
             );
-            adsList.add(one);
+            adList.add(one);
         }
-        return adsList;
+        return adList;
     }
 
 
-    public static HashMap<String , Ads> parseToMap(Document page) {
+    public static HashMap<String , Ad> parseToMap(Document page) {
 
         Element firstElement = page.select("div[class=items-items-kAJAg][data-marker=catalog-serp]").first();
         Elements newNames  = firstElement.getElementsByAttributeValue("data-marker", "item");
 
-        HashMap<String , Ads> entityHashMap = new HashMap<>();
+        HashMap<String , Ad> entityHashMap = new HashMap<>();
         for(Element e : newNames) {
-            Ads one = new Ads(
+            Ad one = new Ad(
                     Long.valueOf(e.attr("data-item-id")),
                     URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
                     e.getElementsByAttributeValue("itemprop","price").attr("content"),

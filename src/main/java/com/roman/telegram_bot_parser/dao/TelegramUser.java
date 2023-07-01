@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Entity(name = "usersDataTable")
-public class User {
+public class TelegramUser {
 
     @Id
     private Long chatId;
@@ -58,7 +58,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "TelegramUser{" +
                 "chatId=" + chatId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

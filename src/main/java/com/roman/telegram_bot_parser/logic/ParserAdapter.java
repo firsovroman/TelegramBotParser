@@ -2,7 +2,7 @@ package com.roman.telegram_bot_parser.logic;
 
 import com.roman.telegram_bot_parser.config.DriverConfigurator;
 import com.roman.telegram_bot_parser.config.ParserConfig;
-import com.roman.telegram_bot_parser.dao.Ads;
+import com.roman.telegram_bot_parser.dao.Ad;
 import com.roman.telegram_bot_parser.dao.AdsRepository;
 import com.roman.telegram_bot_parser.utils.ParsingUtils;
 import org.jsoup.Jsoup;
@@ -44,13 +44,13 @@ public class ParserAdapter {
     public void parseAndSaveAds()  {
 
         WebDriver webDriver = null;
-        List<Ads> afterFiltering = null;
+        List<Ad> afterFiltering = null;
         try {
             webDriver = driverConfigurator.getChromeDriver();
 
             Document page = getFirstPage(webDriver);
             Thread.sleep(1000);
-            List<Ads> tempList = ParsingUtils.parseToList(page);
+            List<Ad> tempList = ParsingUtils.parseToList(page);
 
             afterFiltering = tempList.stream().filter(it -> {
                 Matcher matcher = filteredByPostTime.matcher(it.getDate());

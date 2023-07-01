@@ -3,8 +3,11 @@ package com.roman.telegram_bot_parser.dao;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Объявление
+ */
 @Entity(name = "adsDataTable")
-public class Ads {
+public class Ad {
 
     @Id
     private long id;
@@ -12,10 +15,10 @@ public class Ads {
     private String price;
     private String date;
 
-    public Ads() {
+    public Ad() {
     }
 
-    public Ads(long id, String link, String price, String date) {
+    public Ad(long id, String link, String price, String date) {
         this.id = id;
         this.link = link;
         this.price = price;
@@ -56,7 +59,7 @@ public class Ads {
 
     @Override
     public String toString() {
-        return "Entity{" +
+        return "Ad{" +
                 "id='" + id + '\'' +
                 ", link='" + link + '\'' +
                 ", price='" + price + '\'' +

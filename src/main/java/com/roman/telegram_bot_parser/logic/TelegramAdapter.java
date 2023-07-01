@@ -1,10 +1,10 @@
 package com.roman.telegram_bot_parser.logic;
 
 import com.roman.telegram_bot_parser.config.BotConfig;
-import com.roman.telegram_bot_parser.dao.Ads;
+import com.roman.telegram_bot_parser.dao.Ad;
 import com.roman.telegram_bot_parser.dao.AdsRepository;
-import com.roman.telegram_bot_parser.dao.User;
-import com.roman.telegram_bot_parser.dao.UserRepository;
+import com.roman.telegram_bot_parser.dao.TelegramUser;
+import com.roman.telegram_bot_parser.dao.TelegramUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,26 +37,33 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private final AdsRepository adsRepository;
 
-    private final UserRepository userRepository;
+    private final TelegramUserRepository telegramUserRepository;
 
     private final ParserAdapter parserAdapter;
 
     private boolean isItAnswer = false;
 
     @Autowired
-    public TelegramAdapter(BotConfig config, AdsRepository adsRepository, UserRepository userRepository, ParserAdapter parserAdapter) {
+    public TelegramAdapter(BotConfig config,
+                           AdsRepository adsRepository,
+                           TelegramUserRepository telegramUserRepository,
+                           ParserAdapter parserAdapter) {
         this.config = config;
         this.adsRepository = adsRepository;
-        this.userRepository = userRepository;
+        this.telegramUserRepository = telegramUserRepository;
         this.parserAdapter = parserAdapter;
         createMainMenu();
     }
 
-    public TelegramAdapter(DefaultBotOptions options, BotConfig config, AdsRepository adsRepository, UserRepository userRepository, ParserAdapter parserAdapter) {
+    public TelegramAdapter(DefaultBotOptions options,
+                           BotConfig config,
+                           AdsRepository adsRepository,
+                           TelegramUserRepository telegramUserRepository,
+                           ParserAdapter parserAdapter) {
         super(options);
         this.config = config;
         this.adsRepository = adsRepository;
-        this.userRepository = userRepository;
+        this.telegramUserRepository = telegramUserRepository;
         this.parserAdapter = parserAdapter;
         createMainMenu();
     }
@@ -141,20 +148,20 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private void registerUserAsSubscriber(Message msg) {
 
-        if(!userRepository.findById(msg.getChatId()).isPresent()) {
+        if(!telegramUserRepository.findById(msg.getChatId()).isPresent()) {
 
             long chatId = msg.getChatId();
             Chat chat = msg.getChat();
 
-            User user = new User();
+            TelegramUser telegramUser = new TelegramUser();
 
-            user.setChatId(chatId);
-            user.setFirstName(chat.getFirstName());
-            user.setLastName(chat.getLastName());
-            user.setUserName(chat.getUserName());
-            user.setRegisteredId(new Timestamp(System.currentTimeMillis()));
+            telegramUser.setChatId(chatId);
+            telegramUser.setFirstName(chat.getFirstName());
+            telegramUser.setLastName(chat.getLastName());
+            telegramUser.setUserName(chat.getUserName());
+            telegramUser.setRegisteredId(new Timestamp(System.currentTimeMillis()));
 
-            userRepository.save(user);
+            telegramUserRepository.save(telegramUser);
             announceServiceAvailability(chatId, msg.getChat().getFirstName(), true);
         } else {
             sendMessage(msg.getChatId(), "Вы уже подписаны на уведомления!");
@@ -172,10 +179,10 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private void unregisterUserAsSubscriber(Message msg) {
             long chatId = msg.getChatId();
-            Optional<User> userOptional = userRepository.findById(chatId);
+            Optional<TelegramUser> userOptional = telegramUserRepository.findById(chatId);
             if(userOptional.isPresent()) {
-                User user = userOptional.get();
-                userRepository.delete(user);
+                TelegramUser telegramUser = userOptional.get();
+                telegramUserRepository.delete(telegramUser);
                 announceServiceAvailability(chatId, msg.getChat().getFirstName(), false);
             } else {
                 sendMessage(chatId, "Уведомления уже были отключены!");
@@ -216,17 +223,17 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     public void sendAllUsers() {
 
-        Iterable<User> subscribersList = userRepository.findAll();
+        Iterable<TelegramUser> subscribersList = telegramUserRepository.findAll();
 
-        Iterable<Ads> adsList = adsRepository.findAll();
+        Iterable<Ad> adsList = adsRepository.findAll();
 
-        List<Ads> ads = (List<Ads>) convertToList(adsList);
+        List<Ad> ads = (List<Ad>) convertToList(adsList);
         
         if(!ads.isEmpty()) {
 
-            for (User u : subscribersList) {
+            for (TelegramUser u : subscribersList) {
 
-                for(Ads a : ads) {
+                for(Ad a : ads) {
                     SendMessage message = getSendMessage(a, u);
                     try {
                         execute(message);
@@ -251,7 +258,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
      *
      */
 
-    private SendMessage getSendMessage(Ads ads, User u) {
+    private SendMessage getSendMessage(Ad ad, TelegramUser u) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -262,13 +269,13 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         sb.append(System.lineSeparator());
         sb.append(System.lineSeparator());
         sb.append("время: ");
-        sb.append(ads.getDate());
+        sb.append(ad.getDate());
         sb.append(System.lineSeparator());
         sb.append("цена: ");
-        sb.append(ads.getPrice());
+        sb.append(ad.getPrice());
         sb.append(System.lineSeparator());
         sb.append("ссылка: ");
-        sb.append(ads.getLink());
+        sb.append(ad.getLink());
         sb.append(System.lineSeparator());
         sb.append("------------------------");
         sb.append(System.lineSeparator());
@@ -289,7 +296,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         throw new IllegalArgumentException("should be collection");
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
+    public TelegramUserRepository getTelegramUserRepository() {
+        return telegramUserRepository;
     }
 }
