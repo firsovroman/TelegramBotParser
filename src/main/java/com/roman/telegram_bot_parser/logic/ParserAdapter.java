@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
@@ -122,4 +123,12 @@ public class ParserAdapter {
         }
         return StringUtils.containsIgnoreCase(ad.getDescription(), it);
     }
+
+
+    public String reportConfig() {
+        return  "Список нежелательных слов=" + Arrays.toString(unwantedWords.toArray())
+                + System.lineSeparator() +
+                "URL для поиска=" + urlForParsing.get();
+    }
+
 }

@@ -42,7 +42,9 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private final ParserAdapter parserAdapter;
 
-    private final AtomicBoolean isItAnswer = new AtomicBoolean(false);
+    private final AtomicBoolean isItEdit = new AtomicBoolean(false);
+
+    private final AtomicBoolean isItExcluded = new AtomicBoolean(false);
 
     @Autowired
     public TelegramAdapter(BotConfig config,
@@ -74,7 +76,9 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand("/info", "get application information"));
         listOfCommands.add(new BotCommand("/start", "enable update subscription"));
         listOfCommands.add(new BotCommand("/edit", "change search link"));
-        listOfCommands.add(new BotCommand("/excluded", "not implemented yet"));
+        listOfCommands.add(new BotCommand("/excluded", "set unwanted keywords list"));
+        listOfCommands.add(new BotCommand("/reset", "reset unwanted keywords list"));
+        listOfCommands.add(new BotCommand("/config", "show current config"));
         listOfCommands.add(new BotCommand("/stop", "disable update subscription"));
 
         try {
@@ -102,9 +106,15 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
             long chatId = update.getMessage().getChatId();
 
-            if (isItAnswer.get()) {
-                isItAnswer.set(false);
+            if (isItEdit.get()) {
+                isItEdit.set(false);
                 validateAndSetURL(messageText, chatId);
+                return;
+            }
+
+            if (isItExcluded.get()) {
+                isItExcluded.set(false);
+                setUnwantedWords(messageText, chatId);
                 return;
             }
 
@@ -117,7 +127,19 @@ public class TelegramAdapter extends TelegramLongPollingBot {
                     break;
                 case "/edit":
                     sendMessage(chatId, "Следующим сообщением введите ссылку для поиска: ");
-                    isItAnswer.set(true);
+                    sendMessage(chatId, "ВАЖНО! Предварительно отфильтруйте объявления \"по дате\"!");
+                    isItEdit.set(true);
+                    break;
+                case "/excluded":
+                    sendMessage(chatId, "Следующим сообщением введите нежелательные ключевые слова через запятую: ");
+                    isItExcluded.set(true);
+                    break;
+                case "/reset":
+                    parserAdapter.resetWordsToExcluded();
+                    sendMessage(chatId, "Список нежелательных ключевых слов очищен.");
+                    break;
+                case "/config":
+                    sendMessage(chatId, parserAdapter.reportConfig());
                     break;
                 case "/stop":
                     unregisterUserAsSubscriber(update.getMessage());
@@ -141,6 +163,30 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         }
     }
 
+
+    private void setUnwantedWords(String messageText, long chatId) {
+        try{
+            List<String> words = getWordsList(messageText);
+            parserAdapter.addWordsToExcluded(words);
+            sendMessage(chatId, "Нежелательные ключевые слова успешно добавлены.");
+        } catch (Exception e) {
+            sendMessage(chatId, "Ошибка! Попробуйте снова или обратитесь к администратору.");
+        }
+    }
+
+
+    /**
+     * Разделение строки на список слов
+     */
+    public static List<String> getWordsList(String inputString) {
+        List<String> words = new ArrayList<>();
+        String[] tokens = inputString.split(",");
+        for (String token : tokens) {
+            String word = token.trim(); // Удаляем пробелы из начала и конца слова
+            words.add(word);
+        }
+        return words;
+    }
 
     /**
      * Добавить пользователя в таблицу подписчиков если его еще там нет.
