@@ -14,20 +14,19 @@ public class ParserConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserConfig.class);
 
 
-    //Возраст истечения срока действия объявления
-    private final int adExpirationAgeMinutes;
+    private final String adAgeRegExp;
     private final String defUrlForParse;
 
     @Autowired
     public ParserConfig(Environment environment) {
-        this.adExpirationAgeMinutes = Integer.parseInt(Objects.requireNonNull(environment.getProperty("parser.adExpirationAgeMinutes")));
-        LOGGER.info("adExpirationAgeMinutes: {}", adExpirationAgeMinutes);
-        this.defUrlForParse = environment.getProperty("parser.defUrlForParse");
+        this.adAgeRegExp = Objects.requireNonNull(environment.getProperty("parser.adAgeRegExp"));
+        LOGGER.info("adAgeRegExp: {}", adAgeRegExp);
+        this.defUrlForParse = Objects.requireNonNull(environment.getProperty("parser.defUrlForParse"));
         LOGGER.info("defUrlForParse: {}", defUrlForParse);
     }
 
-    public int getAdExpirationAgeMinutes() {
-        return adExpirationAgeMinutes;
+    public String getAdAgeRegExp() {
+        return adAgeRegExp;
     }
 
     public String getDefUrlForParse() {

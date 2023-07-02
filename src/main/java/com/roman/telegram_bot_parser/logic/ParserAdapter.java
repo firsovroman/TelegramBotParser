@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +26,8 @@ public class ParserAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParserAdapter.class);
 
     private final AtomicReference<String> urlForParsing;
+
+    private final ConcurrentLinkedDeque<String> unwantedWords = new ConcurrentLinkedDeque<>();
     private final Pattern filteredByPostTime;
 
     private final DriverConfigurator driverConfigurator;
@@ -35,12 +38,11 @@ public class ParserAdapter {
         this.adsRepository = adsRepository;
         this.driverConfigurator = driverConfigurator;
         this.urlForParsing = new AtomicReference<>(parserConfig.getDefUrlForParse());
-        int adExpirationAge = parserConfig.getAdExpirationAgeMinutes();
-        String regExpByPostTime = "\\b[1-" + adExpirationAge + "]\\b минут.*";
+        String regExpByPostTime = parserConfig.getAdAgeRegExp();
         this.filteredByPostTime = Pattern.compile(regExpByPostTime);
     }
 
-    public void parseAndSaveAds()  {
+    public void parseFilterAndSaveAds() {
 
         WebDriver webDriver = null;
         List<Ad> afterFiltering = null;
@@ -48,20 +50,33 @@ public class ParserAdapter {
             webDriver = driverConfigurator.getChromeDriver();
 
             Document page = getFirstPage(webDriver);
+            //todo убрать сон
             Thread.sleep(1000);
             List<Ad> tempList = ParsingUtils.parseToList(page);
 
-            afterFiltering = tempList.stream().filter(it -> {
-                Matcher matcher = filteredByPostTime.matcher(it.getDate());
-                return matcher.find();
-            }).collect(Collectors.toList());
+            afterFiltering = filterByTimeAndDescription(tempList);
 
             adsRepository.saveAll(afterFiltering);
             LOGGER.info("total saved size: {}", afterFiltering.size());
         } catch (Exception e) {
-            LOGGER.error("executeByOrdered().exception ", e);
+            LOGGER.error("parseAndSaveAds().exception {}", e, e);
         }
 
+    }
+
+    /**
+     * Фильтруем старые записи по (adExpirationAgeMinutes) и исключаем записи с нежелательными словами по unwantedWords
+     */
+    public List<Ad> filterByTimeAndDescription(List<Ad> tempList) {
+        List<Ad> afterFiltering;
+        afterFiltering = tempList.stream()
+                .filter(it -> {
+                    Matcher matcher = filteredByPostTime.matcher(it.getDate());
+                    return matcher.find();
+                })
+                .filter(this::notIncludedUnwantedWords)
+                .collect(Collectors.toList());
+        return afterFiltering;
     }
 
     public Document getFirstPage(WebDriver webDriver) {
@@ -69,13 +84,34 @@ public class ParserAdapter {
         return Jsoup.parse(webDriver.getPageSource());
     }
 
-
     public void setUrlForParsing(String urlForParsing) {
         this.urlForParsing.set(urlForParsing);
         LOGGER.info("URL was changed for {}", urlForParsing);
     }
 
-    public AdsRepository getAdsRepository() {
-        return adsRepository;
+    /**
+     * Добавить список запрещенных слов
+     */
+    public void addWordsToExcluded(List<String> words) {
+        unwantedWords.addAll(words);
+        LOGGER.info("excludedWords was changed");
+    }
+
+    /**
+     * Сбросить список запрещенных слов
+     */
+    public void resetWordsToExcluded() {
+        unwantedWords.clear();
+        LOGGER.info("unwantedWords was cleared");
+    }
+
+    /**
+     * Истина если в строке нет ни одного слова из списка.
+     */
+    private boolean notIncludedUnwantedWords(Ad ad) {
+        if (unwantedWords.isEmpty()) {
+            return true;
+        }
+        return unwantedWords.stream().noneMatch(it -> ad.getDescription().contains(it));
     }
 }

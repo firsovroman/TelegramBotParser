@@ -34,7 +34,7 @@ public class Processor {
     public void execute() {
         LOGGER.info("avito parsing started ");
         long started = System.nanoTime();
-        parserAdapter.parseAndSaveAds();
+        parserAdapter.parseFilterAndSaveAds();
         long elapsed = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - started);
         LOGGER.info("avito parsing completed for {} seconds ", elapsed);
 

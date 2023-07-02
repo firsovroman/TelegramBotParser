@@ -97,32 +97,33 @@ public class TelegramAdapter extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-        if(update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
 
             long chatId = update.getMessage().getChatId();
 
-            if(isItAnswer.get()) {
+            if (isItAnswer.get()) {
                 isItAnswer.set(false);
                 validateAndSetURL(messageText, chatId);
                 return;
             }
 
             switch (messageText) {
-                case "/info" :
+                case "/info":
                     sendMessage(chatId, INFORMATION_ABOUT_APP);
                     break;
-                case "/start" :
+                case "/start":
                     registerUserAsSubscriber(update.getMessage());
                     break;
-                case "/edit" :
+                case "/edit":
                     sendMessage(chatId, "Следующим сообщением введите ссылку для поиска: ");
                     isItAnswer.set(true);
                     break;
-                case "/stop" :
+                case "/stop":
                     unregisterUserAsSubscriber(update.getMessage());
                     break;
-                default: sendMessage(chatId, "Команда не распознана.");
+                default:
+                    sendMessage(chatId, "Команда не распознана.");
             }
 
         }
@@ -130,7 +131,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
     }
 
     private void validateAndSetURL(String messageText, long chatId) {
-        if(messageText.startsWith("https://www.avito.ru") && messageText.endsWith("104")) {
+        if (messageText.startsWith("https://www.avito.ru") && messageText.endsWith("104")) {
             parserAdapter.setUrlForParsing(messageText);
             sendMessage(chatId, "Отслеживаемый поисковой запрос успешно изменен.");
 
@@ -142,7 +143,6 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
 
     /**
-     *
      * Добавить пользователя в таблицу подписчиков если его еще там нет.
      *
      * @param msg
@@ -150,7 +150,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
     private void registerUserAsSubscriber(Message msg) {
 
-        if(!telegramUserRepository.findById(msg.getChatId()).isPresent()) {
+        if (!telegramUserRepository.findById(msg.getChatId()).isPresent()) {
 
             long chatId = msg.getChatId();
             Chat chat = msg.getChat();
@@ -173,24 +173,22 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
 
     /**
-     *
      * Удалить пользователя из таблицы подписчиков если он там есть.
      *
      * @param msg
      */
 
     private void unregisterUserAsSubscriber(Message msg) {
-            long chatId = msg.getChatId();
-            Optional<TelegramUser> userOptional = telegramUserRepository.findById(chatId);
-            if(userOptional.isPresent()) {
-                TelegramUser telegramUser = userOptional.get();
-                telegramUserRepository.delete(telegramUser);
-                announceServiceAvailability(chatId, msg.getChat().getFirstName(), false);
-            } else {
-                sendMessage(chatId, "Уведомления уже были отключены!");
-            }
+        long chatId = msg.getChatId();
+        Optional<TelegramUser> userOptional = telegramUserRepository.findById(chatId);
+        if (userOptional.isPresent()) {
+            TelegramUser telegramUser = userOptional.get();
+            telegramUserRepository.delete(telegramUser);
+            announceServiceAvailability(chatId, msg.getChat().getFirstName(), false);
+        } else {
+            sendMessage(chatId, "Уведомления уже были отключены!");
+        }
     }
-
 
 
     private void announceServiceAvailability(long chatId, String firstName, boolean available) {
@@ -211,16 +209,14 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            LOGGER.error("sendMessage()" ,e);
+            LOGGER.error("sendMessage()", e);
         }
 
     }
 
 
     /**
-     *
      * Проверить наличие объявлений и отправить их всем пользователям из базы.
-     *
      */
 
     public void sendAllUsers() {
@@ -230,17 +226,17 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         Iterable<Ad> adsList = adsRepository.findAll();
 
         List<Ad> ads = (List<Ad>) convertToList(adsList);
-        
-        if(!ads.isEmpty()) {
+
+        if (!ads.isEmpty()) {
 
             for (TelegramUser u : subscribersList) {
 
-                for(Ad a : ads) {
+                for (Ad a : ads) {
                     SendMessage message = getSendMessage(a, u);
                     try {
                         execute(message);
                     } catch (TelegramApiException e) {
-                        LOGGER.error("sendAllUsers().exception" ,e);
+                        LOGGER.error("sendAllUsers().exception", e);
                     }
                 }
 
@@ -255,9 +251,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
 
 
     /**
-     *
      * Создать сообщение и заполнить его данными из объекта объявления.
-     *
      */
 
     private SendMessage getSendMessage(Ad ad, TelegramUser u) {

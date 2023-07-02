@@ -14,15 +14,17 @@ public class Ad {
     private String link;
     private String price;
     private String date;
+    private String description;
 
     public Ad() {
     }
 
-    public Ad(long id, String link, String price, String date) {
+    public Ad(long id, String link, String price, String date, String description) {
         this.id = id;
         this.link = link;
         this.price = price;
         this.date = date;
+        this.description = description;
     }
 
     public long getId() {
@@ -57,13 +59,22 @@ public class Ad {
         this.date = date;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "Ad{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", link='" + link + '\'' +
                 ", price='" + price + '\'' +
                 ", date='" + date + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

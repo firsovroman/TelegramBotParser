@@ -15,10 +15,10 @@ public class DriverConfigurator {
 
     @Autowired
     public DriverConfigurator(String buildProfile) {
-        if(buildProfile.equals("dev") ) {
-            System.setProperty("webdriver.chrome.driver", "build_profiles/"+ buildProfile + "/chromedriver.exe");
+        if (buildProfile.equals("dev")) {
+            System.setProperty("webdriver.chrome.driver", "build_profiles/" + buildProfile + "/chromedriver.exe");
         }
-        if(buildProfile.equals("prod")) {
+        if (buildProfile.equals("prod")) {
             System.setProperty("webdriver.chrome.driver", "chromedriver");
         }
 

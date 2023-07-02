@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @Configuration
 @EnableScheduling
-@PropertySource(value = "classpath:extra.def.properties", encoding = "UTF-8", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:version.properties", encoding = "UTF-8")
+@PropertySource(value = "classpath:parser.properties", encoding = "UTF-8")
+@PropertySource(value = "classpath:telegram.properties", encoding = "UTF-8")
 public class AppConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);

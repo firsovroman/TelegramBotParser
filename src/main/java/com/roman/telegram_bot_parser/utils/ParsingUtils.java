@@ -16,15 +16,16 @@ public class ParsingUtils {
 
     public static List<Ad> parseToList(Document page) {
         Element firstElement = page.select("div[class=items-items-kAJAg][data-marker=catalog-serp]").first();
-        Elements newNames  = firstElement.getElementsByAttributeValue("data-marker", "item");
+        Elements newNames = firstElement.getElementsByAttributeValue("data-marker", "item");
 
         List<Ad> adList = new ArrayList<>();
-        for(Element e : newNames) {
+        for (Element e : newNames) {
             Ad one = new Ad(
                     Long.parseLong(e.attr("data-item-id")),
-                    URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
-                    e.getElementsByAttributeValue("itemprop","price").attr("content"),
-                    e.getElementsByAttributeValue("data-marker","item-date").text()
+                    URL_MAKER + e.getElementsByAttributeValue("itemprop", "url").attr("href"),
+                    e.getElementsByAttributeValue("itemprop", "price").attr("content"),
+                    e.getElementsByAttributeValue("data-marker", "item-date").text(),
+                    e.select("meta[itemprop=description]").attr("content")
             );
             adList.add(one);
         }
@@ -32,20 +33,21 @@ public class ParsingUtils {
     }
 
 
-    public static HashMap<String , Ad> parseToMap(Document page) {
+    public static HashMap<String, Ad> parseToMap(Document page) {
 
         Element firstElement = page.select("div[class=items-items-kAJAg][data-marker=catalog-serp]").first();
-        Elements newNames  = firstElement.getElementsByAttributeValue("data-marker", "item");
+        Elements newNames = firstElement.getElementsByAttributeValue("data-marker", "item");
 
-        HashMap<String , Ad> entityHashMap = new HashMap<>();
-        for(Element e : newNames) {
+        HashMap<String, Ad> entityHashMap = new HashMap<>();
+        for (Element e : newNames) {
             Ad one = new Ad(
                     Long.parseLong(e.attr("data-item-id")),
-                    URL_MAKER + e.getElementsByAttributeValue("itemprop","url").attr("href"),
-                    e.getElementsByAttributeValue("itemprop","price").attr("content"),
-                    e.getElementsByAttributeValue("data-marker","item-date").text()
+                    URL_MAKER + e.getElementsByAttributeValue("itemprop", "url").attr("href"),
+                    e.getElementsByAttributeValue("itemprop", "price").attr("content"),
+                    e.getElementsByAttributeValue("data-marker", "item-date").text(),
+                    e.select("meta[itemprop=description]").attr("content")
             );
-            entityHashMap.put(e.attr("data-item-id") ,one);
+            entityHashMap.put(e.attr("data-item-id"), one);
         }
         return entityHashMap;
     }
