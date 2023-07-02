@@ -5,6 +5,7 @@ import com.roman.telegram_bot_parser.config.ParserConfig;
 import com.roman.telegram_bot_parser.dao.Ad;
 import com.roman.telegram_bot_parser.dao.AdsRepository;
 import com.roman.telegram_bot_parser.utils.ParsingUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.WebDriver;
@@ -112,6 +113,13 @@ public class ParserAdapter {
         if (unwantedWords.isEmpty()) {
             return true;
         }
-        return unwantedWords.stream().noneMatch(it -> ad.getDescription().contains(it));
+        return unwantedWords.stream().noneMatch(it -> isContains(ad, it));
+    }
+
+    private static boolean isContains(Ad ad, String it) {
+        if(it.isEmpty()) {
+            return false;
+        }
+        return StringUtils.containsIgnoreCase(ad.getDescription(), it);
     }
 }

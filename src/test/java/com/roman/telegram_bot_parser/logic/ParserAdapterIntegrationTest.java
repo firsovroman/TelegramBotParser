@@ -37,6 +37,7 @@ class ParserAdapterIntegrationTest {
     @Test
     void filterByTimeAndDescription_ShouldFilterAdsByTimeAndDescription() {
 
+//        parserAdapter.addWordsToExcluded(Collections.singletonList(""));
         parserAdapter.addWordsToExcluded(Collections.singletonList("Unwanted"));
 
         // Arrange
