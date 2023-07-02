@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +35,8 @@ public class ParserAdapter {
     private final DriverConfigurator driverConfigurator;
     private final AdsRepository adsRepository;
 
+    private final ExecutorService executorParser = Executors.newCachedThreadPool();
+
     @Autowired
     public ParserAdapter(AdsRepository adsRepository, DriverConfigurator driverConfigurator, ParserConfig parserConfig) {
         this.adsRepository = adsRepository;
@@ -46,17 +48,16 @@ public class ParserAdapter {
 
     public void parseFilterAndSaveAds() {
 
-        WebDriver webDriver = null;
-        List<Ad> afterFiltering = null;
         try {
-            webDriver = driverConfigurator.getChromeDriver();
+            WebDriver webDriver = driverConfigurator.getChromeDriver();
 
-            Document page = getFirstPage(webDriver);
-            //todo убрать сон
-            Thread.sleep(1000);
+            Callable<Document> pageTask = getFirstPage(webDriver);
+            Future<Document> futurePage = executorParser.submit(pageTask);
+            Document page = futurePage.get();
+
             List<Ad> tempList = ParsingUtils.parseToList(page);
 
-            afterFiltering = filterByTimeAndDescription(tempList);
+            List<Ad> afterFiltering = filterByTimeAndDescription(tempList);
 
             adsRepository.saveAll(afterFiltering);
             LOGGER.info("total saved size: {}", afterFiltering.size());
@@ -81,9 +82,9 @@ public class ParserAdapter {
         return afterFiltering;
     }
 
-    public Document getFirstPage(WebDriver webDriver) {
+    public Callable<Document> getFirstPage(WebDriver webDriver) {
         webDriver.get(urlForParsing.get());
-        return Jsoup.parse(webDriver.getPageSource());
+        return () -> Jsoup.parse(webDriver.getPageSource());
     }
 
     public void setUrlForParsing(String urlForParsing) {

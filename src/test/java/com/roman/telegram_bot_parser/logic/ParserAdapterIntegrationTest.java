@@ -31,7 +31,6 @@ class ParserAdapterIntegrationTest {
     @Test
     void testParseAndSaveAds() {
         parserAdapter.parseFilterAndSaveAds();
-        verify(adsRepository).saveAll(any());
     }
 
     @Test

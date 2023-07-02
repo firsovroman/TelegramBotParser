@@ -25,7 +25,7 @@ public class ProcessorJob {
         this.telegramUserRepository = telegramUserRepository;
     }
 
-    @Scheduled(fixedRateString = "#{@processor.config.siteScanningIntervalMillis}")
+    @Scheduled(initialDelayString = "5000", fixedRateString = "#{@processor.config.siteScanningIntervalMillis}")
     public void execute() {
         LOGGER.info("job() started");
         if (listOfUsersIsEmpty(telegramUserRepository.findAll())) {
