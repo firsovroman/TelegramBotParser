@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS tg_bot;
+CREATE USER IF NOT EXISTS 'tg_bot'@'%' IDENTIFIED BY 'tg_bot';
+GRANT ALL PRIVILEGES ON tg_bot.* TO 'tg_bot'@'%';

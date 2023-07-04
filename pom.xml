@@ -165,7 +165,7 @@
 
         </resources>
 
-        <finalName>${project.name}.${project.version}.${build_profile}</finalName>
+        <finalName>${project.name}</finalName>
 
     </build>
 
