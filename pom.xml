@@ -173,9 +173,6 @@
 
         <profile>
             <id>srv:dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <build_profile>dev</build_profile>
             </properties>
@@ -183,6 +180,9 @@
 
         <profile>
             <id>srv:prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <build_profile>prod</build_profile>
             </properties>
