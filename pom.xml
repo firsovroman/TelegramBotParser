@@ -171,6 +171,7 @@
 
     <profiles>
 
+        <!-- Сборка для запуска на локальной машине разработчика. -->
         <profile>
             <id>srv:dev</id>
             <properties>
@@ -178,6 +179,7 @@
             </properties>
         </profile>
 
+        <!-- Сборка для запуска в контейнере. -->
         <profile>
             <id>srv:prod</id>
             <activation>
