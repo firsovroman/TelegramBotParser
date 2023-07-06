@@ -63,4 +63,9 @@
 ![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/3.jpg)
 <br>
 
+Затем в самом боте используем команду _/edit_ для добавления полученного URL.
+<br>
+После используем команду _/excluded_ для добавления слова "вязка".
+<br>
+
 Copyright © 2023 Roman Firsov All rights reserved.
