@@ -55,7 +55,7 @@
 
 Пример настройки фильтров поиска.
 <br>
-![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/2.jpg)
+![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/2.png)
 <br>
 
 После выставления параметров поиска копируем ссылку.
