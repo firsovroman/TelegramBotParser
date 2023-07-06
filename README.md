@@ -48,15 +48,19 @@
 Однако если смотреть низкий ценовой сегмент то вы наткнетесь на объявления (на вязку), к сожалению в авито нет разделения на категории продажа собаки и сдача в аренду для получения щенков.
 Решить проблему с не релевантными объявлениями можно с помошью бота мы можем отфильтровать объявления по списку нежелательных слов в описании по типу (вязка, жених, невеста и прочее). 
 
-Пример не релевантного объявления.
+Пример НЕ релевантного объявления.
+<br>
 ![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/1.jpg)
-
+<br>
 
 Пример настройки фильтров поиска.
+<br>
 ![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/2.jpg)
-
+<br>
 
 После выставления параметров поиска копируем ссылку.
+<br>
 ![alt text](https://github.com/firsovroman/TelegramBotParserPublic/blob/master/.doc/examples/3.jpg)
+<br>
 
 Copyright © 2023 Roman Firsov All rights reserved.
