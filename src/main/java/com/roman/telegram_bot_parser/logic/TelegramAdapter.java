@@ -153,12 +153,14 @@ public class TelegramAdapter extends TelegramLongPollingBot {
     }
 
     private void validateAndSetURL(String messageText, long chatId) {
-        if (messageText.startsWith("https://www.avito.ru") && messageText.endsWith("104")) {
+        if (messageText.startsWith("https://www.avito.ru")) {
+//        if (messageText.startsWith("https://www.avito.ru") && messageText.endsWith("104")) {
             parserAdapter.setUrlForParsing(messageText);
             sendMessage(chatId, "Отслеживаемый поисковой запрос успешно изменен.");
 
         } else {
-            sendMessage(chatId, "Ошибка! Объявления должны быть отфильтрованы по дате и ссылка должна начинаться на: 'http/avito'");
+//            sendMessage(chatId, "Ошибка! Объявления должны быть отфильтрованы по дате и ссылка должна начинаться на: 'http/avito'");
+            sendMessage(chatId, "Ошибка! Ссылка должна начинаться на: 'http/avito'");
             sendMessage(chatId, "попробуйте снова вызвать команду /edit а затем ввести правильную ссылку");
         }
     }
