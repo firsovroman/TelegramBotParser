@@ -2,7 +2,7 @@
 совпадала с версией Chrome на целевой машине запуска.
 
 Текущая версия (chromedriver.exe) в профиле dev: 114.0.5735.16
-Текущая версия (chromedriver.exe) в профиле prod: ~ 105
+Текущая версия (chromedriver.exe) в профиле prod: 106.0.5249.61
 
 Где можно скачать драйвера:
 https://chromedriver.chromium.org/downloads
