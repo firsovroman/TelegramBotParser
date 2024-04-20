@@ -20,6 +20,13 @@ public class ParsingUtils {
 
         List<Ad> adList = new ArrayList<>();
         for (Element e : newNames) {
+
+            // пропустить объявления, которые были подняты наверх за деньги
+            boolean isPromoted = e.select("i.styles-vas-icon-hqDvL").first() != null;
+            if (isPromoted) {
+                continue;
+            }
+
             Ad one = new Ad(
                     Long.parseLong(e.attr("data-item-id")),
                     URL_MAKER + e.getElementsByAttributeValue("itemprop", "url").attr("href"),
