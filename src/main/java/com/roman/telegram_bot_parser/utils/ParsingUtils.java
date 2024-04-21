@@ -22,6 +22,7 @@ public class ParsingUtils {
         for (Element e : newNames) {
 
             // пропустить объявления, которые были подняты наверх за деньги
+            // todo добавить в Ad как параметр и фильтроваться в дургом месте
             boolean isPromoted = e.select("i.styles-vas-icon-hqDvL").first() != null;
             if (isPromoted) {
                 continue;
