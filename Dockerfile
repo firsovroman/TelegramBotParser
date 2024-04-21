@@ -1,5 +1,5 @@
-# В качестве родительского образа используется образ ubuntu-server с предустановленными openjdk8, GoogleChrome
-FROM romanyakit/botparser:latest
+# В качестве родительского образа используется образ mongo:6.0.15 с предустановленными openjdk-8-jdk и GoogleChrome 124.0.6367.60
+FROM romanyakit/bot2024:2
 
 # Копируем сборку TelegramBotParser.jar в контейнер
 COPY target/TelegramBotParser.jar /home/TelegramBotParser.jar
