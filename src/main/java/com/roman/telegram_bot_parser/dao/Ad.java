@@ -1,13 +1,13 @@
 package com.roman.telegram_bot_parser.dao;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Объявление
  */
-@Entity(name = "adsDataTable")
+@Document(collection = "users")
 public class Ad {
 
     @Id
@@ -15,7 +15,6 @@ public class Ad {
     private String link;
     private String price;
     private String date;
-    @Column(columnDefinition = "TEXT")
     private String description;
 
     public Ad() {

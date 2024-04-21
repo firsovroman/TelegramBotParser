@@ -1,10 +1,10 @@
 package com.roman.telegram_bot_parser.dao;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.sql.Timestamp;
 
-@Entity(name = "usersDataTable")
+@Document(collection = "users")
 public class TelegramUser {
 
     @Id

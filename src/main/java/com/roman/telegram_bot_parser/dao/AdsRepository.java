@@ -1,7 +1,7 @@
 package com.roman.telegram_bot_parser.dao;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface AdsRepository extends CrudRepository<Ad, Long> {
+public interface AdsRepository extends MongoRepository<Ad, Long> {
 
 }
