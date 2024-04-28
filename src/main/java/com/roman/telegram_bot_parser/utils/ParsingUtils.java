@@ -1,9 +1,12 @@
 package com.roman.telegram_bot_parser.utils;
 
 import com.roman.telegram_bot_parser.dao.Ad;
+import com.roman.telegram_bot_parser.logic.ParserAdapter;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +14,9 @@ import java.util.List;
 
 
 public class ParsingUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParsingUtils.class);
+
 
     private static final String URL_MAKER = "https://www.avito.ru";
 
@@ -23,8 +29,8 @@ public class ParsingUtils {
 
             // пропустить объявления, которые были подняты наверх за деньги
             // todo добавить в Ad как параметр и фильтроваться в дургом месте
-            boolean isPromoted = e.select("i.styles-vas-icon-hqDvL").first() != null;
-            if (isPromoted) {
+            if (!e.select(".styles-redesign-YLctS").isEmpty()) {
+                LOGGER.warn("skip ad with id: {}", Long.parseLong(e.attr("data-item-id")));
                 continue;
             }
 
