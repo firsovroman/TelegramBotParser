@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
@@ -47,24 +49,62 @@ public class ParserAdapter {
     }
 
     public void parseFilterAndSaveAds() {
-
+        WebDriver webDriver = null;
+        
         try {
-            WebDriver webDriver = driverConfigurator.getChromeDriver();
+            webDriver = driverConfigurator.getChromeDriver();
+            if (webDriver == null) {
+                LOGGER.error("Failed to initialize WebDriver");
+                return;
+            }
 
             Callable<Document> pageTask = getFirstPage(webDriver);
             Future<Document> futurePage = executorParser.submit(pageTask);
-            Document page = futurePage.get();
+            
+            // Добавляем timeout для предотвращения зависания
+            Document page = futurePage.get(30, TimeUnit.SECONDS);
+            
+            if (page == null) {
+                LOGGER.error("Failed to load page or page is empty");
+                return;
+            }
 
             List<Ad> tempList = ParsingUtils.parseToList(page);
+            if (tempList.isEmpty()) {
+                LOGGER.warn("No ads found during parsing");
+                return;
+            }
 
             List<Ad> afterFiltering = filterByTimeAndDescription(tempList);
-
-            adsRepository.saveAll(afterFiltering);
-            LOGGER.info("total saved size: {}", afterFiltering.size());
+            
+            if (!afterFiltering.isEmpty()) {
+                adsRepository.saveAll(afterFiltering);
+                LOGGER.info("Successfully saved {} ads (filtered from {} total)", 
+                           afterFiltering.size(), tempList.size());
+            } else {
+                LOGGER.info("No ads remained after filtering (from {} total)", tempList.size());
+            }
+            
+        } catch (TimeoutException e) {
+            LOGGER.error("Page loading timeout exceeded: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            LOGGER.error("Parsing was interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt(); // Восстанавливаем флаг прерывания
+        } catch (ExecutionException e) {
+            LOGGER.error("Error during page execution: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("parseAndSaveAds().exception {}", e, e);
+            LOGGER.error("Unexpected error during parsing and saving ads: {}", e.getMessage(), e);
+        } finally {
+            // Всегда закрываем WebDriver для освобождения ресурсов
+            if (webDriver != null) {
+                try {
+                    webDriver.quit();
+                    LOGGER.debug("WebDriver closed successfully");
+                } catch (Exception e) {
+                    LOGGER.warn("Error closing WebDriver: {}", e.getMessage());
+                }
+            }
         }
-
     }
 
     /**
@@ -130,6 +170,29 @@ public class ParserAdapter {
         return  "Список нежелательных слов=" + Arrays.toString(unwantedWords.toArray())
                 + System.lineSeparator() +
                 "URL для поиска=" + urlForParsing.get();
+    }
+    
+    /**
+     * Корректно закрываем ExecutorService при завершении работы приложения
+     */
+    @PreDestroy
+    public void cleanup() {
+        LOGGER.info("Shutting down ParserAdapter executor service...");
+        executorParser.shutdown();
+        try {
+            if (!executorParser.awaitTermination(10, TimeUnit.SECONDS)) {
+                LOGGER.warn("Executor did not terminate gracefully, forcing shutdown");
+                executorParser.shutdownNow();
+                if (!executorParser.awaitTermination(5, TimeUnit.SECONDS)) {
+                    LOGGER.error("Executor did not terminate after forced shutdown");
+                }
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Interrupted while shutting down executor", e);
+            executorParser.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        LOGGER.info("ParserAdapter cleanup completed");
     }
 
 }
